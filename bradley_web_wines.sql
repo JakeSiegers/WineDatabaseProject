@@ -1,10 +1,10 @@
 -- phpMyAdmin SQL Dump
--- version 4.1.2
+-- version 4.3.3
 -- http://www.phpmyadmin.net
 --
 -- Host: localhost
--- Generation Time: May 01, 2015 at 02:24 PM
--- Server version: 5.6.15
+-- Generation Time: May 02, 2015 at 01:03 AM
+-- Server version: 5.6.22
 -- PHP Version: 5.3.29
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
@@ -28,9 +28,7 @@ SET time_zone = "+00:00";
 
 CREATE TABLE IF NOT EXISTS `countries` (
   `country_id` int(4) NOT NULL,
-  `country` char(30) NOT NULL,
-  PRIMARY KEY (`country_id`),
-  KEY `country` (`country`)
+  `country` char(30) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 --
@@ -276,8 +274,7 @@ CREATE TABLE IF NOT EXISTS `customer` (
   `zipcode` varchar(10) DEFAULT NULL,
   `country_id` int(4) DEFAULT NULL,
   `phone` varchar(15) DEFAULT NULL,
-  `birth_date` char(10) DEFAULT NULL,
-  PRIMARY KEY (`cust_id`)
+  `birth_date` char(10) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 --
@@ -945,9 +942,7 @@ INSERT INTO `customer` (`cust_id`, `surname`, `firstname`, `initial`, `title_id`
 
 CREATE TABLE IF NOT EXISTS `grape_variety` (
   `variety_id` int(3) NOT NULL,
-  `variety` varchar(50) NOT NULL DEFAULT '',
-  PRIMARY KEY (`variety_id`),
-  KEY `var` (`variety`)
+  `variety` varchar(50) NOT NULL DEFAULT ''
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 --
@@ -988,8 +983,7 @@ CREATE TABLE IF NOT EXISTS `inventory` (
   `inventory_id` int(3) NOT NULL,
   `on_hand` int(5) NOT NULL,
   `cost` decimal(5,2) NOT NULL,
-  `date_added` date DEFAULT NULL,
-  PRIMARY KEY (`wine_id`,`inventory_id`)
+  `date_added` date DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 --
@@ -2059,8 +2053,7 @@ CREATE TABLE IF NOT EXISTS `items` (
   `item_id` int(3) NOT NULL,
   `wine_id` int(4) NOT NULL,
   `qty` int(3) DEFAULT NULL,
-  `price` decimal(5,2) DEFAULT NULL,
-  PRIMARY KEY (`cust_id`,`order_id`,`item_id`)
+  `price` decimal(5,2) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 --
@@ -9865,8 +9858,7 @@ CREATE TABLE IF NOT EXISTS `orders` (
   `date` timestamp(6) NOT NULL DEFAULT CURRENT_TIMESTAMP(6) ON UPDATE CURRENT_TIMESTAMP(6),
   `instructions` varchar(128) DEFAULT NULL,
   `creditcard` char(16) DEFAULT NULL,
-  `expirydate` char(5) DEFAULT NULL,
-  PRIMARY KEY (`cust_id`,`order_id`)
+  `expirydate` char(5) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 --
@@ -12080,17 +12072,14 @@ INSERT INTO `orders` (`cust_id`, `order_id`, `date`, `instructions`, `creditcard
 
 CREATE TABLE IF NOT EXISTS `region` (
   `region_id` int(4) NOT NULL,
-  `region_name` varchar(100) NOT NULL,
-  PRIMARY KEY (`region_id`),
-  KEY `region` (`region_name`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+  `region_name` varchar(100) NOT NULL
+) ENGINE=InnoDB AUTO_INCREMENT=13 DEFAULT CHARSET=utf8;
 
 --
 -- Dumping data for table `region`
 --
 
 INSERT INTO `region` (`region_id`, `region_name`) VALUES
-(1, 'All'),
 (7, 'Barossa Valley'),
 (4, 'Coonawarra'),
 (2, 'Goulburn Valley'),
@@ -12109,8 +12098,7 @@ INSERT INTO `region` (`region_id`, `region_name`) VALUES
 
 CREATE TABLE IF NOT EXISTS `titles` (
   `title_id` int(2) NOT NULL,
-  `title` char(10) DEFAULT NULL,
-  PRIMARY KEY (`title_id`)
+  `title` char(10) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 --
@@ -12135,10 +12123,7 @@ INSERT INTO `titles` (`title_id`, `title`) VALUES
 CREATE TABLE IF NOT EXISTS `users` (
   `cust_id` int(5) NOT NULL,
   `user_name` varchar(50) NOT NULL,
-  `password` varchar(32) NOT NULL,
-  PRIMARY KEY (`user_name`),
-  KEY `password` (`password`),
-  KEY `cust_id` (`cust_id`)
+  `password` varchar(32) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- --------------------------------------------------------
@@ -12153,10 +12138,7 @@ CREATE TABLE IF NOT EXISTS `wine` (
   `wine_type` int(2) NOT NULL,
   `year` int(4) NOT NULL,
   `winery_id` int(4) NOT NULL,
-  `description` blob,
-  PRIMARY KEY (`wine_id`),
-  KEY `name` (`wine_name`),
-  KEY `winery` (`winery_id`)
+  `description` blob
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 --
@@ -13222,10 +13204,7 @@ INSERT INTO `wine` (`wine_id`, `wine_name`, `wine_type`, `year`, `winery_id`, `d
 CREATE TABLE IF NOT EXISTS `winery` (
   `winery_id` int(4) NOT NULL,
   `winery_name` varchar(100) NOT NULL,
-  `region_id` int(4) NOT NULL,
-  PRIMARY KEY (`winery_id`),
-  KEY `name` (`winery_name`),
-  KEY `region` (`region_id`)
+  `region_id` int(4) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 --
@@ -13542,8 +13521,7 @@ INSERT INTO `winery` (`winery_id`, `winery_name`, `region_id`) VALUES
 
 CREATE TABLE IF NOT EXISTS `wine_type` (
   `wine_type_id` int(2) NOT NULL,
-  `wine_type` varchar(32) NOT NULL,
-  PRIMARY KEY (`wine_type_id`)
+  `wine_type` varchar(32) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 --
@@ -13551,7 +13529,6 @@ CREATE TABLE IF NOT EXISTS `wine_type` (
 --
 
 INSERT INTO `wine_type` (`wine_type_id`, `wine_type`) VALUES
-(1, 'All'),
 (2, 'Sparkling'),
 (3, 'Fortified'),
 (4, 'Sweet'),
@@ -13567,9 +13544,7 @@ INSERT INTO `wine_type` (`wine_type_id`, `wine_type`) VALUES
 CREATE TABLE IF NOT EXISTS `wine_variety` (
   `wine_id` int(5) NOT NULL DEFAULT '0',
   `variety_id` int(3) NOT NULL DEFAULT '0',
-  `id` int(1) NOT NULL DEFAULT '0',
-  PRIMARY KEY (`wine_id`,`variety_id`),
-  KEY `wine` (`wine_id`,`variety_id`)
+  `id` int(1) NOT NULL DEFAULT '0'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 --
@@ -15131,6 +15106,97 @@ INSERT INTO `wine_variety` (`wine_id`, `variety_id`, `id`) VALUES
 (1048, 4, 3),
 (1048, 5, 1);
 
+--
+-- Indexes for dumped tables
+--
+
+--
+-- Indexes for table `countries`
+--
+ALTER TABLE `countries`
+  ADD PRIMARY KEY (`country_id`), ADD KEY `country` (`country`);
+
+--
+-- Indexes for table `customer`
+--
+ALTER TABLE `customer`
+  ADD PRIMARY KEY (`cust_id`);
+
+--
+-- Indexes for table `grape_variety`
+--
+ALTER TABLE `grape_variety`
+  ADD PRIMARY KEY (`variety_id`), ADD KEY `var` (`variety`);
+
+--
+-- Indexes for table `inventory`
+--
+ALTER TABLE `inventory`
+  ADD PRIMARY KEY (`wine_id`,`inventory_id`);
+
+--
+-- Indexes for table `items`
+--
+ALTER TABLE `items`
+  ADD PRIMARY KEY (`cust_id`,`order_id`,`item_id`);
+
+--
+-- Indexes for table `orders`
+--
+ALTER TABLE `orders`
+  ADD PRIMARY KEY (`cust_id`,`order_id`);
+
+--
+-- Indexes for table `region`
+--
+ALTER TABLE `region`
+  ADD PRIMARY KEY (`region_id`), ADD KEY `region` (`region_name`);
+
+--
+-- Indexes for table `titles`
+--
+ALTER TABLE `titles`
+  ADD PRIMARY KEY (`title_id`);
+
+--
+-- Indexes for table `users`
+--
+ALTER TABLE `users`
+  ADD PRIMARY KEY (`user_name`), ADD KEY `password` (`password`), ADD KEY `cust_id` (`cust_id`);
+
+--
+-- Indexes for table `wine`
+--
+ALTER TABLE `wine`
+  ADD PRIMARY KEY (`wine_id`), ADD KEY `name` (`wine_name`), ADD KEY `winery` (`winery_id`);
+
+--
+-- Indexes for table `winery`
+--
+ALTER TABLE `winery`
+  ADD PRIMARY KEY (`winery_id`), ADD KEY `name` (`winery_name`), ADD KEY `region` (`region_id`);
+
+--
+-- Indexes for table `wine_type`
+--
+ALTER TABLE `wine_type`
+  ADD PRIMARY KEY (`wine_type_id`);
+
+--
+-- Indexes for table `wine_variety`
+--
+ALTER TABLE `wine_variety`
+  ADD PRIMARY KEY (`wine_id`,`variety_id`), ADD KEY `wine` (`wine_id`,`variety_id`);
+
+--
+-- AUTO_INCREMENT for dumped tables
+--
+
+--
+-- AUTO_INCREMENT for table `region`
+--
+ALTER TABLE `region`
+  MODIFY `region_id` int(4) NOT NULL AUTO_INCREMENT,AUTO_INCREMENT=13;
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
 /*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;

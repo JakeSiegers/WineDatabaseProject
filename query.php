@@ -1,7 +1,5 @@
 <?php
-
 	new QueryWines();
-
 	class QueryWines{
 		function __construct(){
 			require_once 'pdo_helper.php';
@@ -15,6 +13,35 @@
 			if($this->dbc === false){
 				die("Failed to connect to DB");
 			}
+
+			$this->mainQuery = "SELECT wine_id, wine_name,region_name, description, year, winery_name, wine_type.wine_type
+			FROM 	winery, region, wine, wine_type
+			WHERE 	winery.region_id = region.region_id
+			AND 	wine.winery_id = winery.winery_id
+			AND 	wine.wine_type = wine_type.wine_type_id";
+
+			$this->formFilters = array(
+				'queries' => array(
+					'region_name' 	=> "SELECT region_name FROM region"
+					,'year'			=> "SELECT DISTINCT(year) FROM wine ORDER BY year"
+					,'winery_name'	=> "SELECT winery_name FROM winery"
+					,'wine_type' 	=> "SELECT wine_type as 'wine_type' FROM wine_type"
+				),
+				'niceNames' => array(
+					'region_name' 	=> "Region Name"
+					,'year'			=> "Year"
+					,'winery_name'	=> "Winery Name"
+					,'wine_type' 	=> "Wine Type"
+				),
+				'tables' => array(
+					'region_name' 	=> "region"
+					,'year'			=> "wine"
+					,'winery_name'	=> "winery"
+					,'wine_type' 	=> "wine_type"
+				)
+			);
+
+			
 
 			if(isset($_POST['query'])){
 				$this->header();
@@ -34,6 +61,7 @@
 					<head>
 					<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
 					<title>Exploring Wines in a Region</title>
+					<link rel="stylesheet" type="text/css" href="style.css" />
 					</head>
 
 					<body bgcolor="white">';
@@ -45,62 +73,53 @@
 		}
 
 		function showQueryChooser(){
-			if($this->dbc->query("SELECT region_name FROM region") === false){
-				die("Query Failed ".$this->dbc->lastError());
-			}
-			$regions = $this->dbc->fetch_all_assoc();
 
-			if($this->dbc->query("SELECT DISTINCT(year) FROM wine ORDER BY year") === false){
-				die("Query Failed ".$this->dbc->lastError());
-			}
-			$years = $this->dbc->fetch_all_assoc();
 			echo '<form action="query.php" method="POST">';
 
-			//====== Region Form ======
-			echo 'Region:
-			<select name="regionName">';
-			foreach($regions as $region){
-				$selected = "";
-				if(isset($_POST['regionName']) && $_POST['regionName'] == $region['region_name']){
-					$selected = 'selected = "selected"';
-				}
-				echo '<option value="'.$region['region_name'].'" '.$selected.'>'.$region['region_name'].'</option>';
-			}
-			echo '</select><br>';
+			foreach($this->formFilters['queries'] as $filterName => $filterQuery){
 
-			//====== Year Form ======
-			echo 'Year:
-			<select name="year">';
-			echo '<option value="All">All</option>';
-			foreach($years as $year){
-				$selected = "";
-				if(isset($_POST['year']) && $_POST['year'] == $year['year']){
-					$selected = 'selected = "selected"';
+				if($this->dbc->query($filterQuery) === false){
+					die("Query Failed ".$this->dbc->lastError());
 				}
-				echo '<option value="'.$year['year'].'" '.$selected.'>'.$year['year'].'</option>';
+				$filterChoices = $this->dbc->fetch_all_assoc();
+				echo $this->formFilters['niceNames'][$filterName].":";
+				echo '<select name="'.$filterName.'">';
+				echo '<option value="All">All</option>';
+				foreach($filterChoices as $choice){
+					$selected = "";
+					if(isset($_POST[$filterName]) && $_POST[$filterName] == $choice[$filterName]){
+						$selected = 'selected = "selected"';
+					}
+					echo '<option value="'.$choice[$filterName].'" '.$selected.'>'.$choice[$filterName].'</option>';
+				}
+				echo '</select><br>';
 			}
-			echo '</select><br>';
 
-			echo '<input type="hidden" name="query" value="regionName">
-			<input type="submit" value="Show Wines">
-			</form>
-			';
+			echo '<input type="hidden" name="query" value="yes">';
+			echo '<input type="submit" value="Show Wines">';
+			echo '</form>';
 		}
 
 		function showResults(){
-			$query = "SELECT wine_id, wine_name, description, year, winery_name
-			FROM   winery, region, wine
-			WHERE  winery.region_id = region.region_id
-			AND    wine.winery_id = winery.winery_id";
+			$query = $this->mainQuery;
 
-			if (isset($_POST['regionName']) && $_POST['regionName'] != "All"){
-				$query .= " AND region_name = ?";
+			$filters = array();
+			$filters['names'] = array();
+			$filters['values'] = array();
+
+			foreach($this->formFilters['niceNames'] as $filterName => $niceName){
+				if (isset($_POST[$filterName]) && $_POST[$filterName] != "All"){
+					$query .= " AND ".$this->formFilters['tables'][$filterName].".".$filterName." = ?";
+					$filters['names'][] = $niceName;
+					$filters['values'][] = $_POST[$filterName];
+				}
 			}
+
 			$query .= " ORDER BY wine_name";
 
 			$q=false;
-			if (isset($_POST['regionName']) && $_POST['regionName'] != "All"){
-				$q = $this->dbc->query($query,array($_POST['regionName']));
+			if(count($filters['values'])>0){
+				$q = $this->dbc->query($query,$filters['values']);
 			}else{
 				$q = $this->dbc->query($query);
 			}
@@ -108,33 +127,37 @@
 				die("Query Failed ".$this->dbc->lastError());
 			}
 
-			$this->displayWinesList($_POST['regionName']);
+			$this->displayWinesList($filters);
 		}
 
-		function displayWinesList($regionName){
+		function displayWinesList($filters){
 			$rowsFound = $this->dbc->row_count();
-			echo  "{$rowsFound} records found matching your criteria<br>";
-			if ($rowsFound <= 0){
-				return;
+			echo  "{$rowsFound} records found matching your criteria";
+
+			if(count($filters['names'])>0){
+				echo  " - <b>Showing Wines With the following Filters:</b><br>";
+				for($i=0;$i<count($filters['names']);$i++){
+					echo '<span class="red">'.$filters['names'][$i].' = '.$filters['values'][$i].'</span><br />';
+				}
+				
 			}
 
-			echo  "Wines of $regionName<br>";
-
-			echo  "\n<table>\n<tr>" .
-			"\n\t<th>Wine ID</th>" .
-			"\n\t<th>Wine Name</th>" .
-			"\n\t<th>Year</th>" .
-			"\n\t<th>Winery</th>" .
-			"\n\t<th>Description</th>\n</tr>";
+			echo  "<table><tr>" .
+			"<th>Wine Name</th>" .
+			"<th>Year</th>" .
+			"<th>Winery</th>" .
+			"<th>Wine Type</th>".
+			"<th>Region Name</th></tr>";
 
 			while ($row = $this->dbc->fetch_assoc()){
-				echo  "\n<tr>\n\t<td>{$row["wine_id"]}</td>" .
-				"\n\t<td>{$row["wine_name"]}</td>" .
-				"\n\t<td>{$row["year"]}</td>" .
-				"\n\t<td>{$row["winery_name"]}</td>" .
-				"\n\t<td>{$row["description"]}</td>\n</tr>";
+				echo  "<tr>" .
+				"<td>{$row["wine_name"]}</td>" .
+				"<td>{$row["year"]}</td>" .
+				"<td>{$row["winery_name"]}</td>" .
+				"<td>{$row["wine_type"]}</td>" .
+				"<td>{$row["region_name"]}</td></tr>";
 			}
-			echo  "\n</table>";
+			echo  "</table>";
 		}
 	}
 ?>

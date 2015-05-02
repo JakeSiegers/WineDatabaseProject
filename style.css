@@ -1,0 +1,35 @@
+body{
+	font-family: arial;
+}
+table{
+	border-collapse: collapse;
+	width:100%;
+}
+th{
+	border-bottom:solid 1px white;
+	min-width: 100px;
+	text-align: left
+}
+td{
+	border-left:solid 1px white;
+	padding:5px;
+}
+tr{
+	color:white;
+	background:#202020;
+}
+tr:nth-of-type(even) {
+	background:#262626;
+}
+.red{
+	color:#d53a33;
+}
+.green{
+	color:#56c74b;
+}
+a{
+	color:black;
+}
+table a{
+	color:white;
+}
