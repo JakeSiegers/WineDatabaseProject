@@ -3,13 +3,7 @@
 	class QueryWines{
 		function __construct(){
 			require_once 'pdo_helper.php';
-			$this->dbc = new pdo_helper(array(
-				'server' => 'localhost'
-				,'user' => 'root'
-				,'password' => 'rootaccess'
-				,'port' => '3306'
-				,'database' => 'bradley_web_wines'
-			));
+			$this->dbc = new pdo_helper('db.php');
 			if($this->dbc === false){
 				die("Failed to connect to DB");
 			}
