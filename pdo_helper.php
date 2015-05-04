@@ -47,10 +47,9 @@
 
 			try {
 				$this->pdo = new PDO('mysql:dbname='.$this->database.';host='.$this->server.';port='.$this->port,$this->user,$this->password);
-				var_dump($this->pdo);
-				die();
 			} catch (PDOException $e) {
 				$this->logError($e->getMessage());
+				die($e->getMessage());
 				return false;
 			}
 			$this->pdo->setAttribute( PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION );
