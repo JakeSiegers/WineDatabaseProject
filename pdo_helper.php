@@ -46,7 +46,9 @@
 			}
 
 			try {
-				$this->pdo = new PDO('mysql:dbname='.$this->database.';host='.$this->server.';port='.$this->port,$this->user,$this->password);
+				$login = 'mysql:dbname='.$this->database.';host='.$this->server.';port='.$this->port,$this->user,$this->password;
+				echo $login;
+				$this->pdo = new PDO($login);
 			} catch (PDOException $e) {
 				$this->logError($e->getMessage());
 				die($e->getMessage());
