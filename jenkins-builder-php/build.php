@@ -9,7 +9,7 @@
 				"--delete",
 				"--exclude=jenkins-builder-php/",
 				"--exclude=project-files/",
-				"--exclude=.gitignore/",
+				"--exclude=.gitignore",
 				"--exclude=.git/",
 				".",
 				//I assume this won't change. If it does, the build will stop. I feel better putting a absolute URL instead of relative one.
