@@ -2,8 +2,7 @@
 	new QueryWines();
 	class QueryWines{
 		function __construct(){
-			require_once($_SERVER['DOCUMENT_ROOT'].'/inc/db/pdo_helper.php');
-
+			require_once 'pdo_helper.php';
 			$this->dbc = new pdo_helper('db.php');
 			if($this->dbc === false){
 				die("Failed to connect to DB");
