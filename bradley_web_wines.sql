@@ -9855,7 +9855,7 @@ INSERT INTO `items` (`cust_id`, `order_id`, `item_id`, `wine_id`, `qty`, `price`
 CREATE TABLE IF NOT EXISTS `orders` (
   `cust_id` int(5) NOT NULL,
   `order_id` int(5) NOT NULL,
-  `date` timestamp(6) NOT NULL DEFAULT CURRENT_TIMESTAMP(6) ON UPDATE CURRENT_TIMESTAMP(6),
+  `date` timestamp(6) NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   `instructions` varchar(128) DEFAULT NULL,
   `creditcard` char(16) DEFAULT NULL,
   `expirydate` char(5) DEFAULT NULL
